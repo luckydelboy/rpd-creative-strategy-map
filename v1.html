@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPD Creative Strategy | A-Z Process Map</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --card-bg: #111118;
+    --card-border: #1e1e2e;
+    --text: #e4e4e7;
+    --text-muted: #71717a;
+    --accent: #6d5aff;
+    --accent-glow: rgba(109, 90, 255, 0.15);
+    --green: #22c55e;
+    --green-glow: rgba(34, 197, 94, 0.12);
+    --red: #ef4444;
+    --red-glow: rgba(239, 68, 68, 0.12);
+    --amber: #f59e0b;
+    --amber-glow: rgba(245, 158, 11, 0.12);
+    --cyan: #06b6d4;
+    --cyan-glow: rgba(6, 182, 212, 0.12);
+    --pink: #ec4899;
+    --pink-glow: rgba(236, 72, 153, 0.12);
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .hero {
+    padding: 60px 40px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: 2.8rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #6d5aff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    padding: 20px 40px 10px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .legend-dot.ai-own { background: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+  .legend-dot.ai-assist { background: var(--amber); box-shadow: 0 0 8px var(--amber-glow); }
+  .legend-dot.human { background: var(--pink); box-shadow: 0 0 8px var(--pink-glow); }
+  .legend-dot.ongoing { background: var(--cyan); box-shadow: 0 0 8px var(--cyan-glow); }
+
+  /* MAIN FLOW */
+  .flow {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 24px 80px;
+    position: relative;
+  }
+
+  /* Vertical connector line */
+  .flow::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, var(--card-border) 5%, var(--card-border) 95%, transparent);
+    transform: translateX(-1px);
+  }
+
+  /* PHASE HEADER */
+  .phase-header {
+    text-align: center;
+    padding: 20px 0 8px;
+    position: relative;
+    z-index: 2;
+  }
+  .phase-number {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--bg);
+    padding: 6px 20px;
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+  }
+  .phase-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-top: 12px;
+    letter-spacing: -0.02em;
+  }
+  .phase-subtitle {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+
+  /* STEP CARDS */
+  .step {
+    position: relative;
+    z-index: 2;
+    margin: 16px 0;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .step:hover {
+    border-color: #2a2a3e;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .step-head:hover { background: rgba(255,255,255,0.015); }
+
+  .step-icon {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .step-icon.ai-own { background: var(--green-glow); border: 1px solid rgba(34,197,94,0.25); }
+  .step-icon.ai-assist { background: var(--amber-glow); border: 1px solid rgba(245,158,11,0.25); }
+  .step-icon.human { background: var(--pink-glow); border: 1px solid rgba(236,72,153,0.25); }
+  .step-icon.ongoing { background: var(--cyan-glow); border: 1px solid rgba(6,182,212,0.25); }
+
+  .step-info { flex: 1; }
+  .step-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .step-who {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .step-who.ai-own { color: var(--green); }
+  .step-who.ai-assist { color: var(--amber); }
+  .step-who.human { color: var(--pink); }
+  .step-who.ongoing { color: var(--cyan); }
+
+  .step-toggle {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+    font-size: 0.8rem;
+  }
+  .step.open .step-toggle { transform: rotate(180deg); }
+
+  .step-body {
+    display: none;
+    padding: 0 22px 20px 74px;
+  }
+  .step.open .step-body { display: block; }
+
+  .step-body p {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    line-height: 1.65;
+  }
+  .step-body strong { color: var(--text); font-weight: 600; }
+
+  .detail-list {
+    list-style: none;
+    margin: 8px 0;
+  }
+  .detail-list li {
+    position: relative;
+    padding-left: 16px;
+    color: var(--text-muted);
+    font-size: 0.83rem;
+    margin-bottom: 5px;
+    line-height: 1.5;
+  }
+  .detail-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.75rem;
+  }
+
+  .substep {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 10px 0;
+  }
+  .substep-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  /* BRANCH CARD */
+  .branch {
+    position: relative;
+    z-index: 2;
+    margin: 20px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    background: var(--card-bg);
+  }
+  .branch-header {
+    padding: 16px 22px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-align: center;
+    background: rgba(109,90,255,0.06);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .branch-paths {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .branch-path {
+    padding: 20px 22px;
+  }
+  .branch-path:first-child {
+    border-right: 1px solid var(--card-border);
+  }
+  .branch-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .branch-label.win { color: var(--green); }
+  .branch-label.lose { color: var(--red); }
+  .branch-label .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  }
+  .branch-label.win .dot { background: var(--green); }
+  .branch-label.lose .dot { background: var(--red); }
+
+  .branch-path ul {
+    list-style: none;
+  }
+  .branch-path li {
+    position: relative;
+    padding-left: 14px;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    line-height: 1.5;
+  }
+  .branch-path li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: var(--text-muted);
+  }
+
+  /* CONNECTOR ARROW */
+  .connector {
+    text-align: center;
+    padding: 8px 0;
+    position: relative;
+    z-index: 2;
+    color: var(--text-muted);
+    font-size: 1rem;
+  }
+
+  /* FORMAT GRID */
+  .format-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .format-tag {
+    font-size: 0.75rem;
+    padding: 8px 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--text-muted);
+    text-align: center;
+    font-weight: 500;
+  }
+
+  /* GOLDEN RULES */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin: 10px 0;
+  }
+  .rule {
+    font-size: 0.78rem;
+    padding: 8px 12px;
+    background: rgba(109,90,255,0.04);
+    border: 1px solid rgba(109,90,255,0.12);
+    border-radius: 6px;
+    color: var(--text-muted);
+  }
+  .rule span { color: var(--accent); font-weight: 700; margin-right: 4px; }
+
+  /* FRAMEWORKS */
+  .framework-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .pill {
+    font-size: 0.72rem;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+  .pill.purple { background: rgba(109,90,255,0.1); border: 1px solid rgba(109,90,255,0.2); color: #a78bfa; }
+  .pill.blue { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); color: #22d3ee; }
+
+  /* LOOP-BACK INDICATOR */
+  .loop-back {
+    text-align: center;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+  }
+  .loop-back-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border: 1px dashed var(--cyan);
+    border-radius: 100px;
+    color: var(--cyan);
+    font-size: 0.82rem;
+    font-weight: 600;
+    background: rgba(6,182,212,0.04);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 1.8rem; }
+    .flow { padding: 20px 12px 60px; }
+    .step-body { padding-left: 22px; }
+    .branch-paths { grid-template-columns: 1fr; }
+    .branch-path:first-child { border-right: none; border-bottom: 1px solid var(--card-border); }
+    .rules-grid { grid-template-columns: 1fr; }
+    .legend { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Creative Strategy A→Z</h1>
+  <p>The complete process map for producing killer performance ads — from first research to scaled winners. Every step, every decision, every feedback loop.</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot ai-own"></div>AI Can Own</div>
+  <div class="legend-item"><div class="legend-dot ai-assist"></div>AI-Assisted / Human-Led</div>
+  <div class="legend-item"><div class="legend-dot human"></div>Human Only</div>
+  <div class="legend-item"><div class="legend-dot ongoing"></div>Always-On / Ongoing</div>
+</div>
+
+<div class="flow">
+
+  <!-- ======================== GOLDEN RULES ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Foundation</div>
+    <div class="phase-title">The Golden Rules</div>
+    <div class="phase-subtitle">Before anything — these are non-negotiable</div>
+  </div>
+
+  <div class="step open">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">⚡</div>
+      <div class="step-info">
+        <div class="step-name">Every Ad Must Follow These Rules</div>
+        <div class="step-who human">Memorise These</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="rules-grid">
+        <div class="rule"><span>1.</span> Target emotions — emotion comes first, always</div>
+        <div class="rule"><span>2.</span> There must be a promise</div>
+        <div class="rule"><span>3.</span> There must be proof</div>
+        <div class="rule"><span>4.</span> Zero confusion — keep it simple</div>
+        <div class="rule"><span>5.</span> They must sell (we are a performance agency)</div>
+        <div class="rule"><span>6.</span> They must entertain — no dull moments</div>
+        <div class="rule"><span>7.</span> They must be memorable</div>
+        <div class="rule"><span>8.</span> Creativity wins</div>
+        <div class="rule"><span>9.</span> Assumptions are the death of ads</div>
+        <div class="rule"><span>10.</span> Show the product — ideally in first 2 seconds</div>
+      </div>
+      <p>People buy because of <strong>emotion</strong>, not logic. Logic comes in when they justify the purchase. If you can't name the emotion or mindstate your ad targets, scrap it and start again.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 1: RESEARCH ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 1</div>
+    <div class="phase-title">Research</div>
+    <div class="phase-subtitle">The cornerstone of all great advertising. Without research, no ad ideas.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-own">🤖</div>
+      <div class="step-info">
+        <div class="step-name">1A — AI-Assisted Research (Prompt Chain)</div>
+        <div class="step-who ai-own">AI Can Own → Strategist Reviews</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Run the 6-prompt research chain to build an initial intelligence base. This gives you a fast foundation — but it is <strong>not</strong> a replacement for manual research.</p>
+      <ul class="detail-list">
+        <li><strong>Prompt 1:</strong> Market Research — competitive landscape, market size, trends</li>
+        <li><strong>Prompt 2:</strong> Psychographic Research — deep emotional drivers, fears, aspirations</li>
+        <li><strong>Prompt 3:</strong> Unique Mechanism Ideation — differentiated product positioning</li>
+        <li><strong>Prompt 4:</strong> Review Mining (with CSV) — structured extraction from customer reviews</li>
+        <li><strong>Prompt 5:</strong> Winning Video Analysis — breakdown of top-performing ads</li>
+        <li><strong>Prompt 6:</strong> Unified Report — synthesise all prompts into one strategy document</li>
+      </ul>
+      <p><strong>Output:</strong> A unified research document that serves as the base layer for all creative work.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-own">📊</div>
+      <div class="step-info">
+        <div class="step-name">1B — Review Mining</div>
+        <div class="step-who ai-own">AI Can Own</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Pull reviews from the website, Amazon, Trustpilot — everywhere you can find them. Export as CSVs and run through the AI review mining process.</p>
+      <p><strong>What it extracts:</strong> Pain points, desired outcomes, purchase prompts, UVPs, features/benefits, emotional language, golden one-liners, before/after stories, failed solutions.</p>
+      <p>Think of this as having an <strong>AI detective</strong> — it gives you a rapid snapshot of how customers talk, what they care about, and what moves them. This becomes your base for manual research.</p>
+      <p><strong>Output:</strong> Review Mining Doc → stored in Google Doc / company drive.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">🔍</div>
+      <div class="step-info">
+        <div class="step-name">1C — Product Deep Dive</div>
+        <div class="step-who human">Strategist</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Understand the product inside out. You can't sell what you don't understand.</p>
+      <ul class="detail-list">
+        <li>How does the product actually work?</li>
+        <li>What are its ingredients / components?</li>
+        <li>Features → Benefits → Desires (map the chain)</li>
+        <li>What is unique vs. competitors? What's the mechanism?</li>
+        <li>What problems does it solve? For whom?</li>
+        <li>USPs that can become ad claims</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">🕵️</div>
+      <div class="step-info">
+        <div class="step-name">1D — Manual Research (The Deep Work)</div>
+        <div class="step-who human">Strategist — This Is Where the Gold Is</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>This is where the best ad ideas come from. AI gives you the base; manual research gives you the <strong>stories, formats, and raw human truth</strong> that make ads hit.</p>
+
+      <div class="substep">
+        <div class="substep-title">Reddit Deep Dives</div>
+        <ul class="detail-list">
+          <li>Search pain points directly ("dry skin", "can't sleep", "dog pulling on leash")</li>
+          <li>Find stories you can recreate in ads</li>
+          <li>"I want" statements (desires), "I tried X" (experiences), "I feel X" (emotions)</li>
+          <li>"I always/never do X" (behaviors)</li>
+          <li>Screenshot and save golden nuggets</li>
+        </ul>
+      </div>
+
+      <div class="substep">
+        <div class="substep-title">TikTok & YouTube Shorts</div>
+        <ul class="detail-list">
+          <li>Find top-performing organic content in the niche</li>
+          <li>Read the comments — pain points, desires, language patterns</li>
+          <li>Note what formats and content styles the audience engages with</li>
+          <li>These give you both stories AND formats to work with</li>
+        </ul>
+      </div>
+
+      <div class="substep">
+        <div class="substep-title">Competitor & Ad Library Research</div>
+        <ul class="detail-list">
+          <li>Meta Ad Library, Kalodata — what are competitors running?</li>
+          <li>Dissect their messaging, hooks, formats, which avatars they target</li>
+          <li>What are they missing? (Format gaps, avatar gaps, awareness level gaps)</li>
+          <li>What are boring brands doing that makes their ads pop?</li>
+          <li>Look at indirect competitors too</li>
+        </ul>
+      </div>
+
+      <div class="substep">
+        <div class="substep-title">Long-Form YouTube & Niche Content</div>
+        <ul class="detail-list">
+          <li>What desires do niche creators discuss?</li>
+          <li>What pain points come up naturally?</li>
+          <li>What mechanisms/promises are made?</li>
+          <li>How do they build authority?</li>
+        </ul>
+      </div>
+
+      <div class="substep">
+        <div class="substep-title">Trend & Seasonality Research</div>
+        <ul class="detail-list">
+          <li>Google Trends: product + emotional state keywords</li>
+          <li>Seasonality plays (e.g. "Candles" + "Self Care" in winter)</li>
+          <li>Keep your finger on the pulse — always searching for new stories and untapped angles</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">📈</div>
+      <div class="step-info">
+        <div class="step-name">1E — Ad Account Audit & Cross-Analysis</div>
+        <div class="step-who ai-assist">AI-Assisted — Strategist Interprets</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Analyse the ad account (Adnova for winners, Facebook for losers). This is also where <strong>cross-analysis</strong> happens — one of the most powerful ideation tools.</p>
+      <ul class="detail-list">
+        <li>What are the winning ads? What desires do they target?</li>
+        <li>How do they transfer beliefs? What formats are working?</li>
+        <li>What failed and why?</li>
+        <li><strong>Cross-analysis:</strong> Map which desires are being talked to vs. which are missing → go there</li>
+        <li>Look at winners from OTHER ad accounts → adapt for this client</li>
+        <li>Tag each ad by avatar category</li>
+        <li>Where can we add format diversity?</li>
+      </ul>
+      <p><strong>This is a key area for agentic AI</strong> — cross-analysis across accounts, identifying desire gaps, and flagging format opportunities can be automated.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 2: DATA EXTRACTION & AVATARS ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 2</div>
+    <div class="phase-title">Data Extraction & Avatar Building</div>
+    <div class="phase-subtitle">Turn raw research into a targeting weapon</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">🏷️</div>
+      <div class="step-info">
+        <div class="step-name">2A — 5-Category Data Extraction</div>
+        <div class="step-who ai-assist">AI-Assisted — Strategist Validates</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>As you research, tag everything into the 5 avatar categories. Use the validation tests to ensure clean tagging.</p>
+
+      <div class="substep">
+        <div class="substep-title">The 5 Categories + Validation Tests</div>
+        <ul class="detail-list">
+          <li><strong>Desires</strong> — Can you say "I want X" or "I need Y"? ✓</li>
+          <li><strong>Experiences</strong> — Does it describe a circumstance/event without emotion? ✓</li>
+          <li><strong>Emotions</strong> — Does it describe how they FEEL? ✓</li>
+          <li><strong>Behaviors</strong> — Does it describe what they DO and how often? ✓</li>
+          <li><strong>Demographics</strong> — Is it a static characteristic? ✓ (use sparingly)</li>
+        </ul>
+      </div>
+      <p><strong>Output:</strong> Organised extraction lists — all desires, all experiences, all emotions, all behaviors, all demographics. Stored in a Google Sheet with tabs per category.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">👤</div>
+      <div class="step-info">
+        <div class="step-name">2B — Avatar Construction</div>
+        <div class="step-who ai-assist">AI-Assisted — Strategist Leads</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Build avatars in layers — start broad, then combine categories for specificity.</p>
+
+      <div class="substep">
+        <div class="substep-title">Step 1: Core Avatars (single category each)</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">e.g. "Wants better sleep" (desire-based), "Tried melatonin, didn't work" (experience-based), "Feels exhausted" (emotion-based)</p>
+      </div>
+
+      <div class="substep">
+        <div class="substep-title">Step 2: Sub-Avatars (combine 2–3 categories)</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">e.g. "Want better sleep + melatonin failed + feels hopeless + still researching" — this is where targeting gets lethal</p>
+      </div>
+
+      <div class="substep">
+        <div class="substep-title">Step 3: Map Sophistication & Priority</div>
+        <ul class="detail-list">
+          <li>How many have tried solutions? What's their awareness level?</li>
+          <li>Prioritise by: market size, purchase intent, specificity, competitive whitespace</li>
+        </ul>
+      </div>
+
+      <p><strong>Target:</strong> 5 core avatars, 8–10 sub-avatars. Every ad concept should be taggable to a specific sub-avatar.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">🧠</div>
+      <div class="step-info">
+        <div class="step-name">2C — Strategic Analysis (Answer the 17 Questions)</div>
+        <div class="step-who ai-assist">AI-Assisted — Strategist Leads</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Answer every core research question with <strong>avatar-specific context</strong>. Don't give generic answers — every answer should reference which avatar it applies to.</p>
+      <ul class="detail-list">
+        <li>How many avatars? Which are priority and why?</li>
+        <li>Market sophistication per avatar?</li>
+        <li>What are the desires? Dream outcomes? Fears?</li>
+        <li>What are their failed solutions?</li>
+        <li>What beliefs do they hold? How must beliefs be transferred?</li>
+        <li>What are their hesitations?</li>
+        <li>Why is this product better/different? (Per avatar + sophistication level)</li>
+        <li>What is the product's mechanism?</li>
+        <li>What content does the audience like to watch? (Per avatar behavior)</li>
+        <li>How to sell as friend vs. authority? (Per avatar)</li>
+        <li>Are there Greatest Hits that can be applied?</li>
+      </ul>
+      <p><strong>Output:</strong> Complete strategy document. Copy/paste into Google Doc. Store in company drive. This is the creative bible for the account.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 3: IDEATION ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 3</div>
+    <div class="phase-title">Ideation & Messaging</div>
+    <div class="phase-subtitle">3 new concepts per client per week. Message first, format second.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">💡</div>
+      <div class="step-info">
+        <div class="step-name">3A — Concept Ideation (Where Do Ideas Come From?)</div>
+        <div class="step-who human">Strategist — Pattern Recognition</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>This is the creative engine. Ideas come from multiple sources — the strategist's job is to connect dots.</p>
+      <ul class="detail-list">
+        <li><strong>Remake a winner</strong> from a different ad account with this client's messaging</li>
+        <li><strong>Remake a viral organic video</strong> for the ad account</li>
+        <li><strong>Try a format you haven't done</strong> for this client yet</li>
+        <li><strong>New messaging + proven format</strong> — find a new angle and put it in a format you know works</li>
+        <li><strong>Same messaging + new format</strong> — take what's working and diversify the delivery</li>
+        <li><strong>Cross-analysis gap fill</strong> — target a desire the account isn't currently talking to</li>
+        <li><strong>Greatest Hits library</strong> — check winning angles and script templates for applicable patterns</li>
+        <li><strong>Aspiration channel</strong> — internal inspiration feed of great ads</li>
+      </ul>
+      <p>There's a <strong>weekly brainstorming call</strong> and a <strong>weekly strategy school</strong> where this gets discussed. But A-player strategists should be working near-autonomously on this.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">✍️</div>
+      <div class="step-info">
+        <div class="step-name">3B — Messaging: The Promise + Proof</div>
+        <div class="step-who human">Strategist</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Messaging is the #1 priority. The format is just the vehicle — the message is what sells. A bad message in a great format will fail. A great message in any format has a shot.</p>
+      <ul class="detail-list">
+        <li>Every ad needs a <strong>clear promise</strong> — what's in it for the audience?</li>
+        <li>Every ad needs <strong>proof</strong> — why should they believe you?</li>
+        <li>It must target a specific <strong>emotion / mindstate</strong></li>
+        <li>It must be aimed at a specific <strong>awareness level</strong></li>
+        <li>It must be for a specific <strong>avatar / sub-avatar</strong></li>
+        <li>There must be <strong>zero confusion</strong> — if they don't get it, they won't buy</li>
+      </ul>
+
+      <div class="substep">
+        <div class="substep-title">Awareness Level → Lead Type</div>
+        <ul class="detail-list">
+          <li><strong>Unaware:</strong> Story lead — make them aware of the problem first</li>
+          <li><strong>Problem Aware:</strong> Proclamation lead — "Why the Chinese NEVER get sick!"</li>
+          <li><strong>Solution Aware:</strong> Problem-solution lead — start with the problem, dive into the solution</li>
+          <li><strong>Product Aware:</strong> Promise lead — "Grow your hair 10x quicker!"</li>
+          <li><strong>Most Aware:</strong> Offer lead — "Buy now, 20% OFF!"</li>
+        </ul>
+      </div>
+
+      <p><strong>Goal:</strong> Always try to go UP the awareness levels. Unaware → Solution Aware is where you get the most spend. Most advertising lives at Product Aware — we don't want to be most advertisers.</p>
+
+      <div class="substep">
+        <div class="substep-title">Emotional Frameworks to Apply</div>
+        <div class="framework-pills">
+          <span class="pill purple">Survival / Life Extension</span>
+          <span class="pill purple">Enjoyment of Food</span>
+          <span class="pill purple">Freedom from Fear & Pain</span>
+          <span class="pill purple">Sexual Companionship</span>
+          <span class="pill purple">Comfortable Living</span>
+          <span class="pill purple">Superiority / Status</span>
+          <span class="pill purple">Protection of Loved Ones</span>
+          <span class="pill purple">Social Approval</span>
+          <span class="pill blue">Autonomy</span>
+          <span class="pill blue">Achievement</span>
+          <span class="pill blue">Belonging</span>
+          <span class="pill blue">Competence</span>
+          <span class="pill blue">Esteem</span>
+          <span class="pill blue">Engagement</span>
+          <span class="pill blue">Empowerment</span>
+          <span class="pill blue">Nurturance</span>
+          <span class="pill blue">Security</span>
+        </div>
+        <p style="margin-top: 8px;"><strong style="color:#a78bfa;">Purple</strong> = Life Force 8 (Drew Whitman) · <strong style="color:#22d3ee;">Blue</strong> = Mindstates (Sarah Levinger / Will Leech)</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">🎬</div>
+      <div class="step-info">
+        <div class="step-name">3C — Format Selection</div>
+        <div class="step-who human">Strategist</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Match the message to the right format. The format adds diversity (critical post-Andromeda — different people engage with different content differently). The format library is always evolving.</p>
+      <div class="format-grid">
+        <div class="format-tag">Yapper / UGC</div>
+        <div class="format-tag">AI Statics</div>
+        <div class="format-tag">AI-Gen Video</div>
+        <div class="format-tag">VSLs (AI VO + B-Roll)</div>
+        <div class="format-tag">3 Reasons Why</div>
+        <div class="format-tag">Buzzfeed Statics</div>
+        <div class="format-tag">Ugly Statics</div>
+        <div class="format-tag">News Statics</div>
+        <div class="format-tag">Offer Statics</div>
+        <div class="format-tag">Us vs Them</div>
+        <div class="format-tag">Founder Ads</div>
+        <div class="format-tag">TikTok Reply Comment</div>
+        <div class="format-tag">Truth vs Myth</div>
+        <div class="format-tag">Authority / Profession</div>
+        <div class="format-tag">Skeptic Converted</div>
+        <div class="format-tag">Insider Secret</div>
+        <div class="format-tag">Friend's Recommendation</div>
+        <div class="format-tag">Effortless Chic</div>
+      </div>
+      <p>Match format to avatar behavior: moms watch relatable content → yapper. Skeptics need proof → authority. Nighttime routine audience → aesthetic b-roll + VO. Always check the <strong>Greatest Hits library</strong> for proven templates.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 4: HOOK ENGINEERING ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 4</div>
+    <div class="phase-title">Hook Engineering</div>
+    <div class="phase-subtitle">80% of your effort should go on the first 3 seconds</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">🎯</div>
+      <div class="step-info">
+        <div class="step-name">4A — The Hook Hierarchy</div>
+        <div class="step-who ai-assist">AI Can Draft — Human Refines</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <div class="substep">
+        <div class="substep-title">0–1 Second: The Hook (Most Important)</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Something visually or audibly intriguing. A claim, a movement, a zoom, a WOW factor. Text hook should include a benefit while driving curiosity. Ask: "Who else is putting this in their ads?"</p>
+      </div>
+      <div class="substep">
+        <div class="substep-title">1–3 Seconds: The Reason to Stay</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">Tell the audience what's in it for them. Give a benefit or tease a payoff. This is where most drop-off happens if you don't deliver.</p>
+      </div>
+      <div class="substep">
+        <div class="substep-title">3–5 Seconds: The Re-Hook</div>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-top:4px;">If you've already given the benefit, re-hook them. "Three reasons I'm obsessed with these pants." If you haven't given the benefit, deliver it NOW. The audience must know why this matters to them.</p>
+      </div>
+      <p><strong>5-Second Self-Check:</strong> (1) Will this hook the audience? (2) What promise am I giving? (3) Does the audience know what's in it for them? (4) Any confusion or disconnect? (5) Does it target an emotion?</p>
+      <p><strong>Hook bank:</strong> Organise hooks by avatar. 3+ hooks per priority avatar minimum.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 5: BRIEFING ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 5</div>
+    <div class="phase-title">Briefing</div>
+    <div class="phase-subtitle">The brief changes based on the format. Every format has a template.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">📝</div>
+      <div class="step-info">
+        <div class="step-name">5A — UGC / Yapper Ad Brief</div>
+        <div class="step-who ai-assist">AI Can Draft Script — Human Refines</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>A great UGC brief has a <strong>great story</strong>, a <strong>clear promise</strong>, and reads like a <strong>real person talking</strong> — fillers in, not super polished. Use script templates from Greatest Hits as starting frameworks.</p>
+      <ul class="detail-list">
+        <li>Script with exact timings (hook, problem, solution, demo, proof, CTA)</li>
+        <li>Visual direction — what should the creator show at each moment?</li>
+        <li>Tone and energy — casual friend? Authority? Emotional?</li>
+        <li>Specific avatar being targeted</li>
+        <li>The belief transfer that needs to happen</li>
+        <li>Alaina reviews all UGC scripts before they go to creators</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-own">🎨</div>
+      <div class="step-info">
+        <div class="step-name">5B — Static Ad Brief</div>
+        <div class="step-who ai-own">AI Can Own Simple Formats</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Write the copy and show what you want it to look like. For simple formats like "3 Reasons Why," AI can handle end to end.</p>
+      <ul class="detail-list">
+        <li>Headline / hook copy</li>
+        <li>Body copy with promise + proof</li>
+        <li>Visual direction — layout, imagery, mood</li>
+        <li>CTA</li>
+        <li>Reference examples if available</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">🎞️</div>
+      <div class="step-info">
+        <div class="step-name">5C — Video / VSL / AI-Gen Brief</div>
+        <div class="step-who ai-assist">AI-Assisted — Strategist Leads</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li><strong>VSL:</strong> AI voiceover script + b-roll direction + visual cues</li>
+        <li><strong>AI-Gen Video:</strong> Concept (Pixar characters, wild visuals, etc.) + messaging overlay + timing</li>
+        <li><strong>Video edits (existing content):</strong> Clip selection + edit style + hook + CTA</li>
+      </ul>
+      <p>If content already exists for it, you can go straight to designers. If not, brief creators or use AI generation.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 6: PRODUCTION ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 6</div>
+    <div class="phase-title">Production</div>
+    <div class="phase-subtitle">Creators create. Designers design. Editors edit. AI generates.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">🎥</div>
+      <div class="step-info">
+        <div class="step-name">6A — Creator / Designer / Editor Execution</div>
+        <div class="step-who human">Production Team</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li><strong>UGC/Yapper:</strong> Creator films based on the brief</li>
+        <li><strong>Statics:</strong> Designer builds the visual</li>
+        <li><strong>Video edits:</strong> Editor assembles from existing clips + b-roll</li>
+        <li><strong>AI-gen:</strong> AI generates visuals, voiceover, video</li>
+      </ul>
+      <p>Key principles during production: ads must look <strong>native to the platform</strong> (not TV-polished), great lighting is a must, cuts every 2–3 seconds (3–5 for 50+ audiences), no dull moments, show the product frequently. Video length should roughly match target age range (20–30 year olds = 20–30 second ads).</p>
+      <p>Every ad should include (as applicable): <strong>Promise, Benefits, Features, Social Proof, Credibility/Authority, Risk Reversals, CTA.</strong></p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 7: QA ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 7</div>
+    <div class="phase-title">QA & Sign-Off</div>
+    <div class="phase-subtitle">Mon / Tue / Wed — QA days. Nothing goes live without sign-off.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">✅</div>
+      <div class="step-info">
+        <div class="step-name">7A — Strategist Review</div>
+        <div class="step-who human">Strategist</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>The strategist who briefed it reviews the finished asset against the brief. Check: does the hook work? Is the promise clear? Is the proof strong enough? Is the emotion right? Any confusion?</p>
+      <p>Revisions happen here if needed. Sometimes it goes straight through; sometimes it needs work.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">👑</div>
+      <div class="step-info">
+        <div class="step-name">7B — Alaina Sign-Off (Head of Performance)</div>
+        <div class="step-who human">Alaina — Final Quality Gate</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Alaina reviews UGC scripts before they go to creators (earlier in the process) and checks final products before handoff. This is the last quality gate before the client gets it.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">📤</div>
+      <div class="step-info">
+        <div class="step-name">7C — Client Handoff</div>
+        <div class="step-who human">Strategist / Designers</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p>Approved assets are sent to the client. The client's media buyers launch the ads. RPD does not do the media buying — but you analyse the performance.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 8: PERFORMANCE ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 8</div>
+    <div class="phase-title">Performance Monitoring</div>
+    <div class="phase-subtitle">Know your numbers. Context is everything.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">📉</div>
+      <div class="step-info">
+        <div class="step-name">8A — Daily / Weekly Performance Review</div>
+        <div class="step-who ai-assist">AI Can Surface Data — Strategist Interprets</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <p><strong>Primary metric:</strong> Spend at target CPA. Can we scale spend while holding CPA the client is happy with?</p>
+      <p><strong>Diagnostic metrics:</strong></p>
+      <ul class="detail-list">
+        <li><strong>Hook rate</strong> — is it grabbing attention?</li>
+        <li><strong>Hold rate</strong> — are people staying?</li>
+        <li><strong>CTR</strong> — are they clicking?</li>
+        <li><strong>Frequency</strong> — is it burning out?</li>
+        <li><strong>Funnel position</strong> — top, middle, bottom?</li>
+        <li><strong>Cost per purchase / CPA</strong> — the ultimate measure</li>
+      </ul>
+      <p>Look at top performers: last 7 days for newer accounts, last 30 days for established ones. <strong>Editors AND strategists should know their numbers.</strong> If you made a hook that got 40% hook rate vs. one that got 15%, you need to know that and learn from it.</p>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== DECISION BRANCH ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 9</div>
+    <div class="phase-title">The Decision Branch</div>
+    <div class="phase-subtitle">Every ad tells you something. Winning or losing, the data feeds the next move.</div>
+  </div>
+
+  <div class="branch">
+    <div class="branch-header">⚡ Ad Performance Assessment</div>
+    <div class="branch-paths">
+      <div class="branch-path">
+        <div class="branch-label win"><div class="dot"></div> Ad Is Winning</div>
+        <ul>
+          <li><strong>If creator-led:</strong> Send script to new creators — different faces, same message</li>
+          <li><strong>If static:</strong> Change the visual — keep the copy, diversify the look</li>
+          <li><strong>New format:</strong> Take the core message and put it into a completely different format</li>
+          <li><strong>Video conversion:</strong> Can we make this a video? Or vice versa?</li>
+          <li><strong>Hook variations:</strong> Test new visual hooks on the same body</li>
+          <li><strong>Scale the messaging</strong> — you've found what works. Run the greatest hits playbook on it.</li>
+          <li>→ Create 3 iterations per winning concept</li>
+        </ul>
+      </div>
+      <div class="branch-path">
+        <div class="branch-label lose"><div class="dot"></div> Ad Is Losing</div>
+        <ul>
+          <li><strong>Check the metrics:</strong> Where is it failing? Hook rate? Hold rate? CTR? CPA?</li>
+          <li><strong>Poor hook rate?</strong> The hook isn't grabbing attention. Fix the first 1–3 seconds.</li>
+          <li><strong>Good hook, poor hold?</strong> It's hooking but not delivering. Is the payoff there?</li>
+          <li><strong>Good engagement, poor CPA?</strong> Entertaining but not selling. Is the proof strong enough?</li>
+          <li><strong>Always go back to fundamentals:</strong></li>
+          <li>→ Is the desire strong enough?</li>
+          <li>→ Is there enough proof?</li>
+          <li>→ Is it confusing?</li>
+          <li>→ Is the story believable? Does it shift the belief?</li>
+          <li>→ Are we too far down the awareness level?</li>
+          <li><strong>Fix and retest</strong> — many winners come from fixing first-round losers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="connector">↓</div>
+
+  <!-- ======================== PHASE 10: ONGOING ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">Phase 10</div>
+    <div class="phase-title">The Always-On Engine</div>
+    <div class="phase-subtitle">Research never stops. The loop feeds itself.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ongoing">🔄</div>
+      <div class="step-info">
+        <div class="step-name">10A — Weekly Research Cycle</div>
+        <div class="step-who ongoing">Ongoing — Every Week</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li>Search avatar-specific keywords (desire-based, experience-based, emotion-based, behavior-based)</li>
+        <li>Check Reddit, TikTok, YouTube for new stories, pain points, viral formats</li>
+        <li>Monitor competitor ad libraries for new angles</li>
+        <li>Check seasonality and trend data</li>
+        <li>Review aspiration channel for new inspiration</li>
+        <li>Cross-analyse: which desires are performing? Which are we missing?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ongoing">📅</div>
+      <div class="step-info">
+        <div class="step-name">10B — Monthly Avatar Refresh</div>
+        <div class="step-who ongoing">Ongoing — Every Month</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li>Review ad performance by avatar — which are converting?</li>
+        <li>Update avatar priorities based on results</li>
+        <li>Look for new avatar opportunities in research</li>
+        <li>Refine sub-avatars based on comment analysis</li>
+        <li>Are there new sub-avatars emerging from new stories?</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ongoing">📆</div>
+      <div class="step-info">
+        <div class="step-name">10C — Weekly Cadence</div>
+        <div class="step-who ongoing">Team Rhythm</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li><strong>Mon / Tue / Wed:</strong> QA — review assets, sign off, handle revisions, ship to clients</li>
+        <li><strong>Thu / Fri:</strong> Front-load — research, ideation, briefing for the next week</li>
+        <li><strong>Weekly:</strong> Brainstorming call + Strategy school</li>
+        <li><strong>Ongoing:</strong> Daily ad account monitoring (strategist), performance data shared with editors/designers</li>
+      </ul>
+      <p><strong>Volume target:</strong> 3 new concepts × 3 iterations = 9 assets per client per week. Each strategist manages 5 clients.</p>
+    </div>
+  </div>
+
+  <div class="loop-back">
+    <div class="loop-back-inner">
+      ↻ Loop back to Phase 1 — Research feeds the next round of creative
+    </div>
+  </div>
+
+  <div class="connector" style="height: 30px;"></div>
+
+  <!-- ======================== AI OPPORTUNITY MAP ======================== -->
+  <div class="phase-header">
+    <div class="phase-number">AI Overlay</div>
+    <div class="phase-title">Where Agentic AI Fits</div>
+    <div class="phase-subtitle">Today's capabilities → near-term opportunities → what stays human</div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-own">🟢</div>
+      <div class="step-info">
+        <div class="step-name">AI Can Own (Now or Very Soon)</div>
+        <div class="step-who ai-own">Full Autonomy — Human Spot-Checks</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li><strong>Review mining:</strong> Pull CSVs, run extraction, output structured pain points, desires, language patterns</li>
+        <li><strong>AI research prompt chain:</strong> All 6 prompts → unified report generation</li>
+        <li><strong>Cross-analysis:</strong> Map desires being targeted vs. missing across ad accounts</li>
+        <li><strong>Performance data surfacing:</strong> Auto-pull top performers, flag hook rate drops, identify fatigue</li>
+        <li><strong>Simple static formats:</strong> "3 Reasons Why" type ads — brief → design → output</li>
+        <li><strong>AI visual generation:</strong> Static imagery, wild visuals, Pixar-style concepts</li>
+        <li><strong>Script template population:</strong> Take a proven template + avatar data → draft script</li>
+        <li><strong>Winner iteration:</strong> Take a winning ad's structure → automatically generate variations</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon ai-assist">🟡</div>
+      <div class="step-info">
+        <div class="step-name">AI-Assisted, Human-Led (Building Toward)</div>
+        <div class="step-who ai-assist">AI Does the Heavy Lifting — Human Directs & Refines</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li><strong>Avatar construction:</strong> AI proposes avatars from data → strategist validates and prioritises</li>
+        <li><strong>Hook writing:</strong> AI generates hook bank per avatar → strategist picks and polishes</li>
+        <li><strong>Script writing (UGC/Yapper):</strong> AI drafts from template + research → strategist makes it sound human</li>
+        <li><strong>Brief generation:</strong> AI assembles the brief from research + messaging decisions → strategist QAs</li>
+        <li><strong>Competitor ad analysis:</strong> AI scans ad libraries and tags by angle/format/avatar → strategist interprets</li>
+        <li><strong>Diagnostic reporting:</strong> AI auto-generates "this ad failed because X" report → strategist agrees or overrides</li>
+        <li><strong>Complex static/video formats:</strong> AI generates first draft → designer/editor refines</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-head" onclick="toggle(this)">
+      <div class="step-icon human">🔴</div>
+      <div class="step-info">
+        <div class="step-name">Stays Human (The Irreplaceable Bits)</div>
+        <div class="step-who human">Human Judgment — AI Can't Do This Yet</div>
+      </div>
+      <div class="step-toggle">▼</div>
+    </div>
+    <div class="step-body">
+      <ul class="detail-list">
+        <li><strong>Manual deep research:</strong> The Reddit rabbit holes, the TikTok comment mining, the "I found a story" moments — this is where the best ideas come from</li>
+        <li><strong>Pattern recognition across accounts:</strong> Seeing a winner in one account and knowing it'll work in another — intuitive, experience-based</li>
+        <li><strong>Messaging decisions:</strong> Deciding WHICH desire to pursue, which awareness level to target, which belief to shift — strategic judgment</li>
+        <li><strong>Creative taste:</strong> Is this actually good? Does it feel real? Would YOU stop scrolling? The "WOW factor" test</li>
+        <li><strong>Alaina's sign-off:</strong> Final quality gate requires experienced human judgment</li>
+        <li><strong>Strategy school & brainstorming:</strong> The collaborative ideation that generates breakthrough ideas</li>
+        <li><strong>Client relationships:</strong> Understanding what the client wants, managing expectations, communicating strategy</li>
+        <li><strong>Knowing when to break the rules:</strong> Every rule has exceptions. Only humans know when.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggle(el) {
+  el.parentElement.classList.toggle('open');
+}
+
+// open first golden rules card by default (already open via class)
+// smooth scroll behavior
+document.documentElement.style.scrollBehavior = 'smooth';
+</script>
+
+</body>
+</html>
