@@ -1,0 +1,994 @@
+AAAA
+BBBB
+CCCC
+DDDD
+BBBB
+CCCC
+DDDD
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPD Creative Strategy | Process Board</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#f5f5f0;
+  --dot:#d4d4c8;
+  --card-bg:#fff;
+  --card-shadow:0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+  --card-hover:0 8px 24px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.06);
+  --text:#1a1a1a;
+  --text-m:#555;
+  --text-l:#888;
+  --purple:#6d5aff;
+  --purple-bg:#f0edff;
+  --purple-border:#d4ccff;
+  --green:#16a34a;
+  --green-bg:#ecfdf5;
+  --green-border:#a7f3d0;
+  --amber:#d97706;
+  --amber-bg:#fffbeb;
+  --amber-border:#fde68a;
+  --pink:#db2777;
+  --pink-bg:#fdf2f8;
+  --pink-border:#fbcfe8;
+  --cyan:#0891b2;
+  --cyan-bg:#ecfeff;
+  --cyan-border:#a5f3fc;
+  --red:#dc2626;
+  --red-bg:#fef2f2;
+  --red-border:#fecaca;
+  --blue:#2563eb;
+}
+body{
+  font-family:'Inter',-apple-system,sans-serif;
+  background:var(--bg);
+  overflow:hidden;
+  width:100vw;
+  height:100vh;
+  cursor:grab;
+  user-select:none;
+}
+body.grabbing{cursor:grabbing;}
+
+/* TOOLBAR */
+.toolbar{
+  position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border-radius:12px;padding:8px 16px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+}
+.toolbar h1{font-size:0.85rem;font-weight:700;color:var(--text);white-space:nowrap;}
+.toolbar .sep{width:1px;height:20px;background:#e5e5e5;margin:0 4px;}
+.toolbar button{
+  background:#f5f5f5;border:1px solid #e5e5e5;border-radius:8px;
+  width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1rem;color:var(--text);transition:all 0.15s;
+}
+.toolbar button:hover{background:#eee;}
+.zoom-label{font-size:0.72rem;color:var(--text-l);font-weight:600;min-width:36px;text-align:center;}
+
+/* LEGEND */
+.legend-bar{
+  position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:100;
+  display:flex;align-items:center;gap:16px;
+  background:#fff;border-radius:12px;padding:10px 20px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+}
+.leg{display:flex;align-items:center;gap:6px;font-size:0.72rem;font-weight:600;color:var(--text-m);}
+.leg .d{width:10px;height:10px;border-radius:50%;}
+.leg .d.g{background:var(--green);}
+.leg .d.a{background:var(--amber);}
+.leg .d.p{background:var(--pink);}
+.leg .d.c{background:var(--cyan);}
+
+/* MINIMAP */
+.minimap{
+  position:fixed;bottom:16px;right:16px;z-index:100;
+  width:180px;height:120px;background:#fff;border-radius:10px;
+  box-shadow:0 2px 12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
+  overflow:hidden;
+}
+.minimap-content{width:100%;height:100%;position:relative;}
+.minimap-viewport{
+  position:absolute;border:2px solid var(--purple);border-radius:2px;
+  background:rgba(109,90,255,0.06);pointer-events:none;
+}
+.minimap-node{position:absolute;border-radius:2px;}
+
+/* CANVAS */
+#canvas{
+  position:absolute;
+  transform-origin:0 0;
+}
+
+/* DOT GRID */
+.dot-grid{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background-image:radial-gradient(circle, var(--dot) 1px, transparent 1px);
+  background-size:24px 24px;
+  pointer-events:none;z-index:0;
+  opacity:0.6;
+}
+
+/* SVG ARROWS */
+#arrows{position:absolute;top:0;left:0;pointer-events:none;z-index:1;}
+#arrows line, #arrows path{stroke:#c4c4b8;stroke-width:2;fill:none;}
+#arrows .arrow-head{fill:#c4c4b8;stroke:none;}
+#arrows .branch-win{stroke:var(--green);stroke-width:2.5;}
+#arrows .branch-lose{stroke:var(--red);stroke-width:2.5;}
+#arrows .loop-arrow{stroke:var(--cyan);stroke-dasharray:8 4;stroke-width:2;}
+
+/* PHASE ZONES */
+.phase-zone{
+  position:absolute;
+  border-radius:20px;
+  border:2px dashed;
+  opacity:0.5;
+}
+
+/* NODE BASE */
+.node{
+  position:absolute;
+  background:var(--card-bg);
+  border-radius:14px;
+  box-shadow:var(--card-shadow);
+  transition:box-shadow 0.2s, transform 0.15s;
+  z-index:2;
+  cursor:default;
+}
+.node:hover{box-shadow:var(--card-hover);transform:scale(1.015);z-index:5;}
+
+/* PHASE LABEL NODE */
+.node.phase-label{
+  background:var(--text);
+  color:#fff;
+  padding:14px 28px;
+  border-radius:14px;
+  box-shadow:0 4px 16px rgba(0,0,0,0.15);
+}
+.node.phase-label .pnum{font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;opacity:0.6;}
+.node.phase-label .ptitle{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;}
+
+/* STEP NODE */
+.node.step{
+  width:280px;
+  padding:0;
+  overflow:hidden;
+}
+.node.step.wide{width:340px;}
+.node.step .top-bar{height:4px;width:100%;}
+.node.step .top-bar.green{background:var(--green);}
+.node.step .top-bar.amber{background:var(--amber);}
+.node.step .top-bar.pink{background:var(--pink);}
+.node.step .top-bar.cyan{background:var(--cyan);}
+.node.step .top-bar.purple{background:var(--purple);}
+
+.node.step .body{padding:16px 18px;}
+.node.step .step-id{
+  font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+  margin-bottom:6px;
+}
+.node.step .step-id.green{color:var(--green);}
+.node.step .step-id.amber{color:var(--amber);}
+.node.step .step-id.pink{color:var(--pink);}
+.node.step .step-id.cyan{color:var(--cyan);}
+.node.step .step-id.purple{color:var(--purple);}
+
+.node.step .title{font-size:0.85rem;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:6px;}
+.node.step .desc{font-size:0.73rem;color:var(--text-m);line-height:1.55;}
+.node.step .desc strong{color:var(--text);font-weight:600;}
+.node.step .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.node.step .tag{
+  font-size:0.62rem;font-weight:600;padding:3px 8px;border-radius:100px;
+  letter-spacing:0.02em;
+}
+.tag.tg{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);}
+.tag.ta{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);}
+.tag.tp{background:var(--pink-bg);color:var(--pink);border:1px solid var(--pink-border);}
+.tag.tc{background:var(--cyan-bg);color:var(--cyan);border:1px solid var(--cyan-border);}
+.tag.tpu{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);}
+
+/* SPECIAL: RULES CARD */
+.node.rules{
+  width:600px;padding:0;overflow:hidden;
+}
+.rules .rules-header{
+  background:var(--text);color:#fff;padding:18px 24px;
+}
+.rules .rules-header .rh-title{font-size:1rem;font-weight:800;}
+.rules .rules-header .rh-sub{font-size:0.72rem;opacity:0.6;margin-top:2px;}
+.rules .rules-body{
+  padding:16px 20px;
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+}
+.rules .rule{
+  font-size:0.72rem;color:var(--text-m);padding:8px 12px;
+  background:#fafaf8;border-radius:8px;border:1px solid #eee;line-height:1.45;
+}
+.rules .rule b{color:var(--text);font-weight:700;}
+
+/* SPECIAL: BRANCH CARD */
+.node.branch{
+  width:560px;padding:0;overflow:hidden;
+}
+.branch .branch-header{
+  background:var(--purple);color:#fff;padding:14px 20px;text-align:center;
+  font-size:0.9rem;font-weight:700;
+}
+.branch .paths{display:grid;grid-template-columns:1fr 1fr;}
+.branch .path{padding:16px 18px;}
+.branch .path:first-child{border-right:1px solid #eee;}
+.branch .path-label{
+  font-size:0.65rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:5px;
+}
+.branch .path-label.win{color:var(--green);}
+.branch .path-label.lose{color:var(--red);}
+.branch .path-label .dot{width:6px;height:6px;border-radius:50%;}
+.branch .path-label.win .dot{background:var(--green);}
+.branch .path-label.lose .dot{background:var(--red);}
+.branch .path li{
+  font-size:0.72rem;color:var(--text-m);line-height:1.5;margin-bottom:4px;
+  list-style:none;padding-left:12px;position:relative;
+}
+.branch .path li::before{content:'→';position:absolute;left:0;color:var(--text-l);font-size:0.65rem;}
+.branch .path li strong{color:var(--text);font-weight:600;}
+
+/* SPECIAL: FRAMEWORK CARD */
+.node.framework{width:320px;padding:0;overflow:hidden;}
+.framework .fw-header{padding:14px 18px;border-bottom:1px solid #eee;}
+.framework .fw-header .fw-title{font-size:0.82rem;font-weight:700;color:var(--text);}
+.framework .fw-header .fw-sub{font-size:0.68rem;color:var(--text-l);margin-top:2px;}
+.framework .fw-body{padding:12px 16px;}
+.framework .fw-pill{
+  display:inline-block;font-size:0.65rem;font-weight:600;padding:4px 10px;
+  border-radius:100px;margin:2px;
+}
+.fw-pill.pu{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);}
+.fw-pill.bl{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe;}
+
+/* SPECIAL: FORMAT GRID CARD */
+.node.formats{width:380px;padding:0;overflow:hidden;}
+.formats .fm-header{padding:14px 18px;border-bottom:1px solid #eee;}
+.formats .fm-header .fm-title{font-size:0.82rem;font-weight:700;color:var(--text);}
+.formats .fm-body{padding:12px 16px;display:flex;flex-wrap:wrap;gap:5px;}
+.formats .fm-tag{
+  font-size:0.65rem;font-weight:600;padding:5px 10px;
+  background:#fafaf8;border:1px solid #e5e5e0;border-radius:6px;color:var(--text-m);
+}
+
+/* LOOP BACK NODE */
+.node.loop{
+  background:var(--cyan-bg);
+  border:2px dashed var(--cyan);
+  padding:12px 24px;
+  border-radius:100px;
+}
+.loop .loop-text{font-size:0.78rem;font-weight:700;color:var(--cyan);}
+
+/* AWARENESS NODE */
+.node.awareness{width:320px;padding:0;overflow:hidden;}
+.awareness .aw-header{padding:14px 18px;border-bottom:1px solid #eee;}
+.awareness .aw-title{font-size:0.82rem;font-weight:700;color:var(--text);}
+.awareness .aw-body{padding:12px 16px;}
+.awareness .aw-row{
+  display:flex;align-items:flex-start;gap:8px;
+  padding:6px 0;border-bottom:1px solid #f5f5f0;font-size:0.72rem;
+}
+.awareness .aw-row:last-child{border-bottom:none;}
+.awareness .aw-level{
+  flex-shrink:0;font-weight:700;width:90px;
+}
+.awareness .aw-lead{color:var(--text-m);}
+
+/* AI OVERLAY NODE */
+.node.ai-section{width:300px;padding:0;overflow:hidden;}
+.ai-section .ai-header{padding:12px 16px;font-size:0.8rem;font-weight:700;color:#fff;}
+.ai-section .ai-header.gn{background:var(--green);}
+.ai-section .ai-header.am{background:var(--amber);}
+.ai-section .ai-header.pk{background:var(--pink);}
+.ai-section .ai-body{padding:12px 16px;}
+.ai-section .ai-body li{
+  font-size:0.7rem;color:var(--text-m);line-height:1.5;margin-bottom:4px;
+  list-style:none;padding-left:12px;position:relative;
+}
+.ai-section .ai-body li::before{content:'•';position:absolute;left:0;color:var(--text-l);}
+.ai-section .ai-body li strong{color:var(--text);font-weight:600;}
+
+/* HELP HINT */
+.hint{
+  position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:99;
+  font-size:0.7rem;color:var(--text-l);background:rgba(255,255,255,0.9);
+  padding:6px 16px;border-radius:100px;
+  box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  transition:opacity 0.5s;
+}
+</style>
+</head>
+<body>
+
+<div class="dot-grid" id="dotGrid"></div>
+
+<div class="toolbar">
+  <h1>RPD Creative Strategy — A→Z Process Board</h1>
+  <div class="sep"></div>
+  <button onclick="zoomIn()" title="Zoom in">+</button>
+  <span class="zoom-label" id="zoomLabel">100%</span>
+  <button onclick="zoomOut()" title="Zoom out">−</button>
+  <button onclick="resetView()" title="Fit to screen">⊡</button>
+</div>
+
+<div class="hint" id="hint">Click + drag to pan · Scroll to zoom · Hover cards for detail</div>
+
+<div class="legend-bar">
+  <div class="leg"><div class="d g"></div>AI Can Own</div>
+  <div class="leg"><div class="d a"></div>AI-Assisted</div>
+  <div class="leg"><div class="d p"></div>Human Only</div>
+  <div class="leg"><div class="d c"></div>Always-On</div>
+</div>
+
+<svg id="arrows" width="6000" height="5200"></svg>
+
+<div id="canvas">
+
+<!-- ====================== GOLDEN RULES ====================== -->
+<div class="node phase-label" style="left:220px;top:40px;">
+  <div class="pnum">Foundation</div>
+  <div class="ptitle">The Golden Rules</div>
+</div>
+
+<div class="node rules" style="left:80px;top:110px;" id="n-rules">
+  <div class="rules-header">
+    <div class="rh-title">Every Ad Must Follow These 10 Rules</div>
+    <div class="rh-sub">Memorise these. They are non-negotiable.</div>
+  </div>
+  <div class="rules-body">
+    <div class="rule"><b>1.</b> Target emotions — emotion comes first</div>
+    <div class="rule"><b>2.</b> There must be a promise</div>
+    <div class="rule"><b>3.</b> There must be proof</div>
+    <div class="rule"><b>4.</b> Zero confusion</div>
+    <div class="rule"><b>5.</b> They must sell</div>
+    <div class="rule"><b>6.</b> They must entertain</div>
+    <div class="rule"><b>7.</b> They must be memorable</div>
+    <div class="rule"><b>8.</b> Creativity wins</div>
+    <div class="rule"><b>9.</b> Assumptions kill ads</div>
+    <div class="rule"><b>10.</b> Show the product (first 2 secs)</div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 1: RESEARCH ====================== -->
+<div class="node phase-label" style="left:170px;top:400px;">
+  <div class="pnum">Phase 1</div>
+  <div class="ptitle">Research</div>
+</div>
+
+<div class="node step" style="left:60px;top:480px;" id="n-1a">
+  <div class="top-bar green"></div>
+  <div class="body">
+    <div class="step-id green">Step 1A · AI Can Own</div>
+    <div class="title">AI Research Prompt Chain</div>
+    <div class="desc">Run the 6-prompt chain: <strong>Market Research → Psychographic → UMP Ideation → Review Mining → Winning Video Analysis → Unified Report</strong>. Fast foundation — not a replacement for manual work.</div>
+    <div class="tags"><span class="tag tg">Automated</span><span class="tag tg">6 Prompts</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:380px;top:480px;" id="n-1b">
+  <div class="top-bar green"></div>
+  <div class="body">
+    <div class="step-id green">Step 1B · AI Can Own</div>
+    <div class="title">Review Mining</div>
+    <div class="desc">Pull reviews from <strong>website, Amazon, Trustpilot</strong>. Export CSVs. Run through AI extraction. Outputs: pain points, desires, language patterns, golden one-liners, before/after stories, failed solutions. Think <strong>"AI detective"</strong>.</div>
+    <div class="tags"><span class="tag tg">CSVs</span><span class="tag tg">Pain Points</span><span class="tag tg">Language</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:60px;top:700px;" id="n-1c">
+  <div class="top-bar pink"></div>
+  <div class="body">
+    <div class="step-id pink">Step 1C · Human</div>
+    <div class="title">Product Deep Dive</div>
+    <div class="desc">How does it work? Ingredients/components? <strong>Features → Benefits → Desires</strong> (map the chain). USPs, mechanism, what problems it solves, what's unique vs. competitors.</div>
+    <div class="tags"><span class="tag tp">Strategist</span></div>
+  </div>
+</div>
+
+<div class="node step wide" style="left:380px;top:700px;" id="n-1d">
+  <div class="top-bar pink"></div>
+  <div class="body">
+    <div class="step-id pink">Step 1D · Human — Where the Gold Is</div>
+    <div class="title">Manual Research (Deep Work)</div>
+    <div class="desc"><strong>Reddit:</strong> Pain points, stories, "I want/tried/feel" statements, golden nuggets.<br><strong>TikTok/YouTube:</strong> Viral content in niche, comments for desires + pain points, format inspo.<br><strong>Competitors:</strong> Ad libraries, Kalodata — messaging, hooks, formats, avatar gaps.<br><strong>Trends:</strong> Google Trends, seasonality, untapped angles.<br><strong>Long-form YouTube:</strong> Authority building, mechanisms, promises in niche content.</div>
+    <div class="tags"><span class="tag tp">Strategist</span><span class="tag tp">Best Ideas Here</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:200px;top:960px;" id="n-1e">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 1E · AI-Assisted</div>
+    <div class="title">Ad Account Audit & Cross-Analysis</div>
+    <div class="desc">Analyse in <strong>Adnova (winners) + Facebook (losers)</strong>. Tag ads by avatar. Map desires being targeted vs. <strong>desires missing</strong> → go there. Check winners from other accounts. Key area for agentic AI.</div>
+    <div class="tags"><span class="tag ta">Cross-Analysis</span><span class="tag ta">Desire Gaps</span></div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 2: AVATARS ====================== -->
+<div class="node phase-label" style="left:120px;top:1180px;">
+  <div class="pnum">Phase 2</div>
+  <div class="ptitle">Data Extraction & Avatars</div>
+</div>
+
+<div class="node step" style="left:60px;top:1260px;" id="n-2a">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 2A · AI-Assisted</div>
+    <div class="title">5-Category Data Extraction</div>
+    <div class="desc">Tag all research into: <strong>Desires</strong> ("I want X"), <strong>Experiences</strong> (events, no emotion), <strong>Emotions</strong> (how they feel), <strong>Behaviors</strong> (what they do), <strong>Demographics</strong> (static traits, use sparingly). Store in Google Sheet with tabs per category.</div>
+    <div class="tags"><span class="tag ta">Structured</span><span class="tag ta">5 Categories</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:380px;top:1260px;" id="n-2b">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 2B · AI-Assisted</div>
+    <div class="title">Avatar Construction</div>
+    <div class="desc"><strong>Core Avatars</strong> (single category each, 5 minimum) → <strong>Sub-Avatars</strong> (combine 2–3 categories, 8–10 total) → <strong>Map sophistication + priority</strong> (market size, purchase intent, competitive whitespace). Every ad concept must tag to a specific sub-avatar.</div>
+    <div class="tags"><span class="tag ta">Core → Sub</span><span class="tag ta">Prioritise</span></div>
+  </div>
+</div>
+
+<div class="node step wide" style="left:180px;top:1480px;" id="n-2c">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 2C · AI-Assisted</div>
+    <div class="title">Strategic Analysis — Answer the 17 Questions</div>
+    <div class="desc">Every answer must be <strong>avatar-specific</strong>: How many avatars + priorities? Market sophistication per avatar? Desires, dream outcomes, fears? Failed solutions? <strong>Belief transfers</strong> needed? Hesitations? Why better/different (per avatar + sophistication)? Product mechanism? Content preferences? Greatest Hits applicable?<br><br><strong>Output: Complete strategy document → Google Doc → company drive. The creative bible.</strong></div>
+    <div class="tags"><span class="tag ta">Strategy Bible</span><span class="tag tpu">17 Questions</span></div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 3: IDEATION ====================== -->
+<div class="node phase-label" style="left:1000px;top:40px;">
+  <div class="pnum">Phase 3</div>
+  <div class="ptitle">Ideation & Messaging</div>
+</div>
+
+<div class="node step wide" style="left:900px;top:120px;" id="n-3a">
+  <div class="top-bar pink"></div>
+  <div class="body">
+    <div class="step-id pink">Step 3A · Human — Pattern Recognition</div>
+    <div class="title">Concept Ideation (3 Per Client Per Week)</div>
+    <div class="desc"><strong>Where ideas come from:</strong><br>→ Remake a winner from a different ad account<br>→ Remake a viral organic video for the ad account<br>→ Try a format you haven't done yet<br>→ New messaging + proven format<br>→ Same messaging + new format<br>→ Cross-analysis gap fill (untargetted desire)<br>→ Greatest Hits library<br>→ Aspiration channel<br><br>Weekly brainstorming call + strategy school. A-players work near-autonomously.</div>
+    <div class="tags"><span class="tag tp">Strategist</span><span class="tag tpu">3 Concepts/Week</span></div>
+  </div>
+</div>
+
+<div class="node step wide" style="left:900px;top:430px;" id="n-3b">
+  <div class="top-bar pink"></div>
+  <div class="body">
+    <div class="step-id pink">Step 3B · Human</div>
+    <div class="title">Messaging: Promise + Proof</div>
+    <div class="desc">Message is #1. Format is just the vehicle. Every ad needs: <strong>Clear promise</strong> (what's in it for them), <strong>Proof</strong> (why believe you), specific <strong>emotion/mindstate</strong>, specific <strong>awareness level</strong>, specific <strong>avatar/sub-avatar</strong>, <strong>zero confusion</strong>.<br><br><strong>Goal:</strong> Always go UP the awareness levels. Unaware → Solution Aware = most spend. Don't live at Product Aware like everyone else.</div>
+    <div class="tags"><span class="tag tp">Promise</span><span class="tag tp">Proof</span><span class="tag tp">Emotion</span></div>
+  </div>
+</div>
+
+<!-- AWARENESS LEVELS CARD -->
+<div class="node awareness" style="left:1300px;top:120px;" id="n-awareness">
+  <div class="aw-header"><div class="aw-title">Awareness Levels → Lead Types</div></div>
+  <div class="aw-body">
+    <div class="aw-row"><div class="aw-level" style="color:var(--red);">Unaware</div><div class="aw-lead">Story lead — make them aware of the problem</div></div>
+    <div class="aw-row"><div class="aw-level" style="color:var(--amber);">Problem Aware</div><div class="aw-lead">Proclamation lead — "Why the Chinese NEVER get sick!"</div></div>
+    <div class="aw-row"><div class="aw-level" style="color:#ca8a04;">Solution Aware</div><div class="aw-lead">Problem-solution lead — best starting point for new accounts</div></div>
+    <div class="aw-row"><div class="aw-level" style="color:var(--green);">Product Aware</div><div class="aw-lead">Promise lead — "Grow your hair 10x quicker!"</div></div>
+    <div class="aw-row"><div class="aw-level" style="color:var(--blue);">Most Aware</div><div class="aw-lead">Offer lead — "Buy now, 20% OFF!"</div></div>
+  </div>
+</div>
+
+<!-- FRAMEWORKS CARD -->
+<div class="node framework" style="left:1300px;top:430px;" id="n-frameworks">
+  <div class="fw-header">
+    <div class="fw-title">Emotional Frameworks</div>
+    <div class="fw-sub">If you can't name the emotion, scrap the ad</div>
+  </div>
+  <div class="fw-body">
+    <span class="fw-pill pu">Survival</span>
+    <span class="fw-pill pu">Food & Drink</span>
+    <span class="fw-pill pu">Freedom from Pain</span>
+    <span class="fw-pill pu">Sexual Companionship</span>
+    <span class="fw-pill pu">Comfort</span>
+    <span class="fw-pill pu">Status / Superiority</span>
+    <span class="fw-pill pu">Protect Loved Ones</span>
+    <span class="fw-pill pu">Social Approval</span>
+    <span class="fw-pill bl">Autonomy</span>
+    <span class="fw-pill bl">Achievement</span>
+    <span class="fw-pill bl">Belonging</span>
+    <span class="fw-pill bl">Competence</span>
+    <span class="fw-pill bl">Esteem</span>
+    <span class="fw-pill bl">Engagement</span>
+    <span class="fw-pill bl">Empowerment</span>
+    <span class="fw-pill bl">Nurturance</span>
+    <span class="fw-pill bl">Security</span>
+    <div style="margin-top:8px;font-size:0.65rem;color:var(--text-l);"><span style="color:var(--purple);font-weight:700;">Purple</span> = Life Force 8 · <span style="color:var(--blue);font-weight:700;">Blue</span> = Mindstates</div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 3C: FORMAT + HOOKS ====================== -->
+<div class="node formats" style="left:900px;top:730px;" id="n-formats">
+  <div class="fm-header"><div class="fm-title">Format Library (Always Evolving)</div></div>
+  <div class="fm-body">
+    <div class="fm-tag">Yapper / UGC</div>
+    <div class="fm-tag">AI Statics</div>
+    <div class="fm-tag">AI-Gen Video</div>
+    <div class="fm-tag">VSLs</div>
+    <div class="fm-tag">3 Reasons Why</div>
+    <div class="fm-tag">Buzzfeed Statics</div>
+    <div class="fm-tag">Ugly Statics</div>
+    <div class="fm-tag">News Statics</div>
+    <div class="fm-tag">Offer Statics</div>
+    <div class="fm-tag">Us vs Them</div>
+    <div class="fm-tag">Founder Ads</div>
+    <div class="fm-tag">TikTok Reply</div>
+    <div class="fm-tag">Truth vs Myth</div>
+    <div class="fm-tag">Authority / Profession</div>
+    <div class="fm-tag">Skeptic Converted</div>
+    <div class="fm-tag">Insider Secret</div>
+    <div class="fm-tag">Friend's Rec</div>
+    <div class="fm-tag">Effortless Chic</div>
+  </div>
+</div>
+
+<div class="node step" style="left:1320px;top:730px;" id="n-hooks">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 4 · AI Can Draft</div>
+    <div class="title">Hook Engineering</div>
+    <div class="desc"><strong>0–1s:</strong> The hook. Visual or audible intrigue. WOW factor. Text hook = benefit + curiosity.<br><strong>1–3s:</strong> What's in it for them? Benefit or tease payoff.<br><strong>3–5s:</strong> Re-hook. "3 reasons I'm obsessed with these."<br><br><strong>80% of effort on first 3 seconds.</strong> Build a hook bank per avatar (3+ each).</div>
+    <div class="tags"><span class="tag ta">Hook Bank</span><span class="tag tpu">80/20 Rule</span></div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 5: BRIEFING ====================== -->
+<div class="node phase-label" style="left:1000px;top:1020px;">
+  <div class="pnum">Phase 5</div>
+  <div class="ptitle">Briefing</div>
+</div>
+
+<div class="node step" style="left:850px;top:1100px;" id="n-5a">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 5A · AI Drafts → Human Refines</div>
+    <div class="title">UGC / Yapper Brief</div>
+    <div class="desc">Great story, clear promise, sounds like a <strong>real person</strong> (fillers in, not polished). Script with timings, visual direction, tone, target avatar, belief transfer. <strong>Alaina reviews scripts before sending to creators.</strong></div>
+    <div class="tags"><span class="tag ta">Script</span><span class="tag tp">Alaina QA</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:1170px;top:1100px;" id="n-5b">
+  <div class="top-bar green"></div>
+  <div class="body">
+    <div class="step-id green">Step 5B · AI Can Own Simple Formats</div>
+    <div class="title">Static Ad Brief</div>
+    <div class="desc">Copy + visual direction. For simple formats like <strong>"3 Reasons Why"</strong>, AI can handle end to end: brief → design → output. Headline, body copy (promise + proof), layout, CTA, reference examples.</div>
+    <div class="tags"><span class="tag tg">Simple = Automated</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:1490px;top:1100px;" id="n-5c">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 5C · AI-Assisted</div>
+    <div class="title">Video / VSL / AI-Gen Brief</div>
+    <div class="desc"><strong>VSL:</strong> AI VO script + b-roll direction.<br><strong>AI-Gen:</strong> Concept + messaging overlay.<br><strong>Video edits:</strong> Clip selection + edit style + hook. If content exists → straight to designers.</div>
+    <div class="tags"><span class="tag ta">Multiple Formats</span></div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 6: PRODUCTION ====================== -->
+<div class="node phase-label" style="left:1000px;top:1370px;">
+  <div class="pnum">Phase 6</div>
+  <div class="ptitle">Production</div>
+</div>
+
+<div class="node step wide" style="left:920px;top:1440px;" id="n-6">
+  <div class="top-bar pink"></div>
+  <div class="body">
+    <div class="step-id pink">Production · Team Executes</div>
+    <div class="title">Creator / Designer / Editor Execution</div>
+    <div class="desc"><strong>UGC/Yapper:</strong> Creator films. <strong>Statics:</strong> Designer builds. <strong>Video:</strong> Editor assembles. <strong>AI-Gen:</strong> AI generates.<br><br>Ads must look <strong>native to platform</strong>. Great lighting always. Cuts every 2–3s (3–5s for 50+). Video length ≈ target age. No dull moments. Show product frequently.<br><br>Include: Promise, Benefits, Features, Social Proof, Authority, Risk Reversals, CTA.</div>
+    <div class="tags"><span class="tag tp">Creators</span><span class="tag tp">Designers</span><span class="tag tp">Editors</span><span class="tag tg">AI Gen</span></div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 7: QA ====================== -->
+<div class="node phase-label" style="left:1660px;top:40px;">
+  <div class="pnum">Phase 7</div>
+  <div class="ptitle">QA & Sign-Off</div>
+</div>
+
+<div class="node step" style="left:1660px;top:120px;" id="n-7a">
+  <div class="top-bar pink"></div>
+  <div class="body">
+    <div class="step-id pink">Step 7A · Human</div>
+    <div class="title">Strategist Review</div>
+    <div class="desc">Review finished asset against brief. Hook work? Promise clear? Proof strong? Emotion right? Confusion? Revisions if needed.</div>
+    <div class="tags"><span class="tag tp">Strategist</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:1660px;top:330px;" id="n-7b">
+  <div class="top-bar pink"></div>
+  <div class="body">
+    <div class="step-id pink">Step 7B · Human</div>
+    <div class="title">Alaina Sign-Off</div>
+    <div class="desc"><strong>Head of Performance.</strong> Reviews UGC scripts before creators, checks final products before handoff. Last quality gate.</div>
+    <div class="tags"><span class="tag tp">Final Gate</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:1660px;top:520px;" id="n-7c">
+  <div class="top-bar purple"></div>
+  <div class="body">
+    <div class="step-id purple">Step 7C · Handoff</div>
+    <div class="title">Client Handoff</div>
+    <div class="desc">Approved assets → client. <strong>Client's media buyers launch the ads.</strong> RPD does not do media buying but analyses performance.</div>
+    <div class="tags"><span class="tag tpu">To Client</span></div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 8: PERFORMANCE ====================== -->
+<div class="node phase-label" style="left:1660px;top:710px;">
+  <div class="pnum">Phase 8</div>
+  <div class="ptitle">Performance</div>
+</div>
+
+<div class="node step wide" style="left:1640px;top:790px;" id="n-8">
+  <div class="top-bar amber"></div>
+  <div class="body">
+    <div class="step-id amber">Step 8 · AI Surfaces Data → Human Interprets</div>
+    <div class="title">Daily / Weekly Performance Review</div>
+    <div class="desc"><strong>Primary:</strong> Spend at target CPA.<br><strong>Diagnostics:</strong> Hook rate, Hold rate, CTR, Frequency, Funnel position, Cost per purchase.<br><br>Top performers: last 7 days (newer) / 30 days (established). <strong>Editors AND strategists must know their numbers.</strong> "When I did X, I got 40% hook rate. When I did Y, 15%. Do more of X."</div>
+    <div class="tags"><span class="tag ta">Daily</span><span class="tag ta">Know Your Numbers</span></div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 9: BRANCH ====================== -->
+<div class="node branch" style="left:1560px;top:1050px;" id="n-branch">
+  <div class="branch-header">⚡ Phase 9: The Decision Branch</div>
+  <div class="paths">
+    <div class="path">
+      <div class="path-label win"><div class="dot"></div>Ad Is Winning</div>
+      <ul>
+        <li><strong>Creator-led:</strong> Send script to new creators</li>
+        <li><strong>Static:</strong> Change visual, keep copy</li>
+        <li><strong>New format:</strong> Same message, different vehicle</li>
+        <li><strong>Video conversion:</strong> Static → video or vice versa</li>
+        <li><strong>Hook variations:</strong> New hooks on same body</li>
+        <li>Scale the messaging → <strong>3 iterations per winner</strong></li>
+      </ul>
+    </div>
+    <div class="path">
+      <div class="path-label lose"><div class="dot"></div>Ad Is Losing</div>
+      <ul>
+        <li><strong>Poor hook rate?</strong> Fix first 1–3 seconds</li>
+        <li><strong>Good hook, poor hold?</strong> Payoff missing</li>
+        <li><strong>Good engagement, poor CPA?</strong> Not selling</li>
+        <li>→ Is the desire strong enough?</li>
+        <li>→ Is there enough proof?</li>
+        <li>→ Is it confusing?</li>
+        <li>→ Is the story believable?</li>
+        <li>→ Too far down awareness level?</li>
+        <li><strong>Fix and retest</strong> — many winners come from fixing losers</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== PHASE 10: ONGOING ====================== -->
+<div class="node phase-label" style="left:2200px;top:40px;">
+  <div class="pnum">Phase 10</div>
+  <div class="ptitle">Always-On Engine</div>
+</div>
+
+<div class="node step" style="left:2180px;top:120px;" id="n-10a">
+  <div class="top-bar cyan"></div>
+  <div class="body">
+    <div class="step-id cyan">Weekly · Ongoing</div>
+    <div class="title">Weekly Research Cycle</div>
+    <div class="desc">Avatar-specific keyword searches. Reddit, TikTok, YouTube for new stories + formats. Competitor ad library monitoring. Seasonality + trends. Aspiration channel. Cross-analyse desire performance.</div>
+    <div class="tags"><span class="tag tc">Every Week</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:2180px;top:350px;" id="n-10b">
+  <div class="top-bar cyan"></div>
+  <div class="body">
+    <div class="step-id cyan">Monthly · Ongoing</div>
+    <div class="title">Monthly Avatar Refresh</div>
+    <div class="desc">Review performance by avatar. Update priorities. Look for new avatar opportunities. Refine sub-avatars from comment analysis. New sub-avatars emerging?</div>
+    <div class="tags"><span class="tag tc">Every Month</span></div>
+  </div>
+</div>
+
+<div class="node step" style="left:2180px;top:550px;" id="n-10c">
+  <div class="top-bar cyan"></div>
+  <div class="body">
+    <div class="step-id cyan">Cadence · Team Rhythm</div>
+    <div class="title">Weekly Cadence</div>
+    <div class="desc"><strong>Mon–Wed:</strong> QA, review, sign off, ship.<br><strong>Thu–Fri:</strong> Front-load research, ideation, briefing.<br><strong>Weekly:</strong> Brainstorming call + Strategy school.<br><strong>Target:</strong> 3 concepts × 3 iterations × 5 clients per strategist.</div>
+    <div class="tags"><span class="tag tc">45 Assets/Week</span></div>
+  </div>
+</div>
+
+<div class="node loop" style="left:2220px;top:770px;" id="n-loop">
+  <div class="loop-text">↻ Loop back to Phase 1 — feeds the next round</div>
+</div>
+
+<!-- ====================== AI OVERLAY ====================== -->
+<div class="node phase-label" style="left:2200px;top:900px;">
+  <div class="pnum">AI Overlay</div>
+  <div class="ptitle">Where AI Fits</div>
+</div>
+
+<div class="node ai-section" style="left:2080px;top:980px;" id="n-ai-own">
+  <div class="ai-header gn">🟢 AI Can Own (Now)</div>
+  <div class="ai-body">
+    <ul>
+      <li><strong>Review mining</strong> → structured extraction</li>
+      <li><strong>6-prompt research chain</strong> → unified report</li>
+      <li><strong>Cross-analysis</strong> → desire gap mapping</li>
+      <li><strong>Performance data</strong> → auto-pull, flag fatigue</li>
+      <li><strong>Simple statics</strong> ("3 Reasons Why")</li>
+      <li><strong>AI visual generation</strong></li>
+      <li><strong>Script template population</strong></li>
+      <li><strong>Winner iteration</strong> → auto-generate variations</li>
+    </ul>
+  </div>
+</div>
+
+<div class="node ai-section" style="left:2400px;top:980px;" id="n-ai-assist">
+  <div class="ai-header am">🟡 AI-Assisted (Building To)</div>
+  <div class="ai-body">
+    <ul>
+      <li><strong>Avatar construction</strong> → AI proposes, human validates</li>
+      <li><strong>Hook writing</strong> → AI generates, human picks</li>
+      <li><strong>UGC scripts</strong> → AI drafts, human makes it real</li>
+      <li><strong>Brief generation</strong> → AI assembles, human QAs</li>
+      <li><strong>Competitor analysis</strong> → AI scans + tags</li>
+      <li><strong>Diagnostic reports</strong> → "This ad failed because X"</li>
+      <li><strong>Complex formats</strong> → AI drafts, team refines</li>
+    </ul>
+  </div>
+</div>
+
+<div class="node ai-section" style="left:2240px;top:1260px;" id="n-ai-human">
+  <div class="ai-header pk">🔴 Stays Human</div>
+  <div class="ai-body">
+    <ul>
+      <li><strong>Manual deep research</strong> — Reddit rabbit holes, the "I found a story" moments</li>
+      <li><strong>Pattern recognition</strong> across accounts</li>
+      <li><strong>Messaging decisions</strong> — which desire, which awareness level</li>
+      <li><strong>Creative taste</strong> — the WOW factor test</li>
+      <li><strong>Alaina's sign-off</strong></li>
+      <li><strong>Strategy school + brainstorming</strong></li>
+      <li><strong>Client relationships</strong></li>
+      <li><strong>Knowing when to break the rules</strong></li>
+    </ul>
+  </div>
+</div>
+
+</div><!-- end canvas -->
+
+<script>
+// PAN & ZOOM
+let scale = 0.55;
+let panX = 50;
+let panY = 20;
+let isPanning = false;
+let startX, startY;
+const canvas = document.getElementById('canvas');
+const arrows = document.getElementById('arrows');
+const dotGrid = document.getElementById('dotGrid');
+
+function applyTransform() {
+  const t = `translate(${panX}px, ${panY}px) scale(${scale})`;
+  canvas.style.transform = t;
+  arrows.style.transform = t;
+  document.getElementById('zoomLabel').textContent = Math.round(scale * 100) + '%';
+  dotGrid.style.backgroundSize = `${24 * scale}px ${24 * scale}px`;
+  dotGrid.style.backgroundPosition = `${panX % (24 * scale)}px ${panY % (24 * scale)}px`;
+}
+
+document.addEventListener('mousedown', (e) => {
+  if (e.target.closest('.toolbar') || e.target.closest('.legend-bar') || e.target.closest('.minimap')) return;
+  isPanning = true;
+  startX = e.clientX - panX;
+  startY = e.clientY - panY;
+  document.body.classList.add('grabbing');
+});
+document.addEventListener('mousemove', (e) => {
+  if (!isPanning) return;
+  panX = e.clientX - startX;
+  panY = e.clientY - startY;
+  applyTransform();
+});
+document.addEventListener('mouseup', () => {
+  isPanning = false;
+  document.body.classList.remove('grabbing');
+});
+document.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.05 : 0.05;
+  const newScale = Math.min(2, Math.max(0.15, scale + delta));
+  const rect = document.body.getBoundingClientRect();
+  const mx = e.clientX;
+  const my = e.clientY;
+  panX = mx - (mx - panX) * (newScale / scale);
+  panY = my - (my - panY) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+}, { passive: false });
+
+function zoomIn() { scale = Math.min(2, scale + 0.1); applyTransform(); }
+function zoomOut() { scale = Math.max(0.15, scale - 0.1); applyTransform(); }
+function resetView() { scale = 0.55; panX = 50; panY = 20; applyTransform(); }
+
+// DRAW ARROWS
+function drawArrows() {
+  const svg = document.getElementById('arrows');
+  svg.innerHTML = '';
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+
+  // Arrow marker
+  const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+  marker.setAttribute('id', 'arrowhead');
+  marker.setAttribute('markerWidth', '10');
+  marker.setAttribute('markerHeight', '7');
+  marker.setAttribute('refX', '9');
+  marker.setAttribute('refY', '3.5');
+  marker.setAttribute('orient', 'auto');
+  const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+  poly.setAttribute('points', '0 0, 10 3.5, 0 7');
+  poly.setAttribute('class', 'arrow-head');
+  poly.setAttribute('fill', '#b0b0a4');
+  marker.appendChild(poly);
+  defs.appendChild(marker);
+
+  // Cyan arrow marker
+  const markerC = marker.cloneNode(true);
+  markerC.setAttribute('id', 'arrowhead-cyan');
+  markerC.querySelector('polygon').setAttribute('fill', '#0891b2');
+  defs.appendChild(markerC);
+
+  svg.appendChild(defs);
+
+  const connections = [
+    // Rules → Phase 1
+    { from: 'n-rules', to: 'n-1a', fb: 'bottom', tt: 'top' },
+    { from: 'n-rules', to: 'n-1b', fb: 'bottom', tt: 'top' },
+    // 1A/1B → 1C/1D
+    { from: 'n-1a', to: 'n-1c', fb: 'bottom', tt: 'top' },
+    { from: 'n-1b', to: 'n-1d', fb: 'bottom', tt: 'top' },
+    // 1C/1D → 1E
+    { from: 'n-1c', to: 'n-1e', fb: 'bottom', tt: 'top' },
+    { from: 'n-1d', to: 'n-1e', fb: 'bottom', tt: 'top' },
+    // 1E → 2A/2B
+    { from: 'n-1e', to: 'n-2a', fb: 'bottom', tt: 'top' },
+    { from: 'n-1e', to: 'n-2b', fb: 'bottom', tt: 'top' },
+    // 2A/2B → 2C
+    { from: 'n-2a', to: 'n-2c', fb: 'bottom', tt: 'top' },
+    { from: 'n-2b', to: 'n-2c', fb: 'bottom', tt: 'top' },
+    // 2C → 3A (big jump right)
+    { from: 'n-2c', to: 'n-3a', fb: 'right', tt: 'left' },
+    // 3A → 3B
+    { from: 'n-3a', to: 'n-3b', fb: 'bottom', tt: 'top' },
+    // 3B → formats
+    { from: 'n-3b', to: 'n-formats', fb: 'bottom', tt: 'top' },
+    // 3B → hooks
+    { from: 'n-3b', to: 'n-hooks', fb: 'bottom', tt: 'top' },
+    // formats → 5A
+    { from: 'n-formats', to: 'n-5a', fb: 'bottom', tt: 'top' },
+    // hooks → 5A
+    { from: 'n-hooks', to: 'n-5b', fb: 'bottom', tt: 'top' },
+    // formats → 5C
+    { from: 'n-formats', to: 'n-5c', fb: 'bottom', tt: 'top' },
+    // 5A/5B/5C → 6
+    { from: 'n-5a', to: 'n-6', fb: 'bottom', tt: 'top' },
+    { from: 'n-5b', to: 'n-6', fb: 'bottom', tt: 'top' },
+    { from: 'n-5c', to: 'n-6', fb: 'bottom', tt: 'top' },
+    // 6 → 7A
+    { from: 'n-6', to: 'n-7a', fb: 'right', tt: 'left' },
+    // 7A → 7B → 7C
+    { from: 'n-7a', to: 'n-7b', fb: 'bottom', tt: 'top' },
+    { from: 'n-7b', to: 'n-7c', fb: 'bottom', tt: 'top' },
+    // 7C → 8
+    { from: 'n-7c', to: 'n-8', fb: 'bottom', tt: 'top' },
+    // 8 → Branch
+    { from: 'n-8', to: 'n-branch', fb: 'bottom', tt: 'top' },
+    // Branch → 10A (ongoing)
+    { from: 'n-branch', to: 'n-10a', fb: 'right', tt: 'left' },
+    // 10A → 10B → 10C → Loop
+    { from: 'n-10a', to: 'n-10b', fb: 'bottom', tt: 'top' },
+    { from: 'n-10b', to: 'n-10c', fb: 'bottom', tt: 'top' },
+    { from: 'n-10c', to: 'n-loop', fb: 'bottom', tt: 'top' },
+  ];
+
+  connections.forEach(c => {
+    const fromEl = document.getElementById(c.from);
+    const toEl = document.getElementById(c.to);
+    if (!fromEl || !toEl) return;
+
+    let x1, y1, x2, y2;
+    const fr = fromEl.getBoundingClientRect();
+    const tr = toEl.getBoundingClientRect();
+    // Use offsetLeft/offsetTop since we're in same coordinate space
+    const fLeft = fromEl.offsetLeft, fTop = fromEl.offsetTop, fW = fromEl.offsetWidth, fH = fromEl.offsetHeight;
+    const tLeft = toEl.offsetLeft, tTop = toEl.offsetTop, tW = toEl.offsetWidth, tH = toEl.offsetHeight;
+
+    if (c.fb === 'bottom') { x1 = fLeft + fW/2; y1 = fTop + fH; }
+    else if (c.fb === 'right') { x1 = fLeft + fW; y1 = fTop + fH/2; }
+    else if (c.fb === 'left') { x1 = fLeft; y1 = fTop + fH/2; }
+
+    if (c.tt === 'top') { x2 = tLeft + tW/2; y2 = tTop; }
+    else if (c.tt === 'left') { x2 = tLeft; y2 = tTop + tH/2; }
+    else if (c.tt === 'right') { x2 = tLeft + tW; y2 = tTop + tH/2; }
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    // Bezier curve
+    const dx = Math.abs(x2 - x1);
+    const dy = Math.abs(y2 - y1);
+    let cpx1, cpy1, cpx2, cpy2;
+
+    if (c.fb === 'bottom' && c.tt === 'top') {
+      const mid = (y1 + y2) / 2;
+      cpx1 = x1; cpy1 = mid;
+      cpx2 = x2; cpy2 = mid;
+    } else if (c.fb === 'right' && c.tt === 'left') {
+      const mid = (x1 + x2) / 2;
+      cpx1 = mid; cpy1 = y1;
+      cpx2 = mid; cpy2 = y2;
+    } else {
+      cpx1 = x1 + dx * 0.3; cpy1 = y1;
+      cpx2 = x2 - dx * 0.3; cpy2 = y2;
+    }
+
+    path.setAttribute('d', `M ${x1} ${y1} C ${cpx1} ${cpy1}, ${cpx2} ${cpy2}, ${x2} ${y2}`);
+    path.setAttribute('marker-end', 'url(#arrowhead)');
+    svg.appendChild(path);
+  });
+
+  // Loop-back arrow (dashed cyan)
+  const loopEl = document.getElementById('n-loop');
+  const researchEl = document.getElementById('n-1a');
+  if (loopEl && researchEl) {
+    const lx = loopEl.offsetLeft;
+    const ly = loopEl.offsetTop + loopEl.offsetHeight / 2;
+    const rx = researchEl.offsetLeft + researchEl.offsetWidth / 2;
+    const ry = researchEl.offsetTop;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    // Go left and up in a big arc
+    path.setAttribute('d', `M ${lx} ${ly} C ${lx - 400} ${ly}, ${rx - 400} ${ry}, ${rx} ${ry}`);
+    path.setAttribute('class', 'loop-arrow');
+    path.setAttribute('marker-end', 'url(#arrowhead-cyan)');
+    svg.appendChild(path);
+  }
+}
+
+// INIT
+applyTransform();
+drawArrows();
+
+// Fade hint
+setTimeout(() => {
+  const h = document.getElementById('hint');
+  if (h) h.style.opacity = '0';
+  setTimeout(() => { if (h) h.remove(); }, 500);
+}, 5000);
+</script>
+</body>
+</html>
